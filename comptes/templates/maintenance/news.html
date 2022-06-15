@@ -1,0 +1,144 @@
+{% extends 'maintenance/base.html' %}
+{% load static %}
+{% block content %}
+{% if messages %}
+<div class="container mt-2">
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    <ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+</div>
+{% endif %}
+<div class="container mb-2">
+  <div class="row justify-content-center">
+      <button type="button" class="btn btn-blue" data-toggle="modal" data-target="#exampleModal">
+      <i class="fa fa-plus"></i> Add post
+      </button>
+  </div>
+</div>
+<!-- posts -->
+<div class="alert alert-primary" role="alert">
+  All posts
+</div>
+
+
+  <div class="row">
+    {% for p in posts %}
+      <div class="col-md-4">
+        <div class="card">
+          {% if p.photo %}
+          <a href="{% url 'detail_post' p.id %}"><img src="{{p.photo.url}}" class="card-img-top" height="400" alt="..."></a>
+          {% else %}
+          <a href="{% url 'detail_post' p.id %}"><img src="{% static 'images/default_photo.png' %}" class="card-img-top" alt="..."></a>
+          {% endif %}
+          <div class="card-body">
+            <h5 class="card-title text-primary"><a href="{% url 'detail_post' p.id %}">{{p.title}}</a></h5>
+            <p class="card-text">{{p.content | truncatewords_html:25 }}</p>
+          </div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item"><i class="fa fa-plus"></i> Add: <span class="text-primary">{{p.created}}</span></li>
+            <li class="list-group-item"><i class="fa fa-user"></i> User:  <span class="text-primary"> {{p.auteur.first_name}} {{p.auteur.last_name}}</span></li>
+          </ul>
+          {% if p.auteur == request.user %}
+          <div class="card-body">
+            <a href="{% url 'edit_post' p.id %}" class="card-link btn btn-primary"><i class="fa fa-pencil"></i> Edit</a>
+            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deletepost{{p.id}}">
+              Delete
+            </button>
+            <!-- Modal -->
+          <div class="modal fade" id="deletepost{{p.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Delete post</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <h6>Confirm deletion of this post "{{p.title}}"</h6>
+                  <a href="{% url 'delete_post' p.id %}" class="btn btn-danger">Delete post</a>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    {% empty %}
+    <div class="container my-auto">
+      <div class="card">
+          <div class="card-body">
+          <h3 class="text-success" style="justify-content:center;display: flex; align-items: center;"> No posts after this search <q>{{ request.GET.q }}</q></h3>
+          </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+<!-- end posts-->
+<nav aria-label="Page navigation example mt-2">
+  <ul class="pagination justify-content-center">
+  {% if posts.has_previous %}
+  <li class="page-item"><a class="page-link" href="?page={{ posts.previous_page_number }}">&laquo;</a></li>
+  {% endif %}
+  {% for p in posts.paginator.page_range %}
+  {% if posts.number == l  %}
+  <li class="page-item active"><a class="page-link" href="?page={{p}}">{{p}}</a></li>
+  {% else %}
+  <li class="page-item"><a class="page-link" href="?page={{p}}">{{p}}</a></li>
+  {% endif %}
+   {% endfor %}
+  {% if posts.has_next %}
+  <li class="page-item"><a class="page-link" href="?page={{ posts.next_page_number }}">&raquo;</a></li>
+  {% endif %}
+  </ul>
+</nav>
+<!-- My modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add post</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" action="" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col">
+            <input type="text" class="form-control" placeholder="title" name="title" required>
+            <hr>
+            </div>
+            <div class="col">
+              <input type="file" class="form-control" placeholder="Add imgae" name="photo">
+              <hr>
+            </div>
+        </div>
+        <div class="form-group">
+          <label for="exampleFormControlTextarea1">Content</label>
+          <textarea class="form-control" id="exampleFormControlTextarea1" rows="10" name="content" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary float-right">Save</button>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <span class="text-warning">NB: Only title and content are required</span>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- end Modal-->
+{% endblock content %}

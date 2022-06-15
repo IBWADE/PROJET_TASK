@@ -1,0 +1,65 @@
+{% extends 'maintenance/base.html' %}
+
+{% block content %}
+<div class="container mt-1 mb-1">
+    <div class="alert alert-primary" role="alert">
+        Edit a task
+    </div>
+</div>
+<div class="container">
+    <div class="row justify-content-center shadow p-3 mb-5 bg-white rounded">
+        <form method="POST" action="{% url 'tasks' %}">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col">
+                <input type="date" class="form-control" placeholder="Date" name="date">
+                <hr>
+                <input type="text" class="form-control" value="{{task.location}}" placeholder="Location" name="location" required>
+                <hr>
+                <input type="text" class="form-control" value="{{task.ata}}" placeholder="ATA" name="ata" required>
+                <hr>
+                <input type="text" class="form-control" value="{{task.acregistration}}" placeholder="A/C Reg or .Comp S/n" name="acregistration" required>
+                <hr>
+                <input type="text" class="form-control" value="{{task.operation}}" placeholder="Operation performed" name="operation" required>
+                <hr>
+                <input type="number" class="form-control" value="{{task.time}}" placeholder="Time Duration" name="time"required>
+                <hr>
+                <textarea class="form-control" name="remark" placeholder="remark">{{task.remark}}</textarea>
+                </div>
+                <div class="col">
+                <input type="text" class="form-control" value="{{task.typemaintenance}}" placeholder="Type of maintenance" name="typemaintenance">
+                <hr>
+                <select class="form-control" id="exampleFormControlSelect1" name="privilege">
+                  <option>privilege used</option>
+                  <option value="B1">B1</option>
+                  <option value="B2">B2</option>
+                </select>
+                <hr>
+                <input type="text" class="form-control" value="{{task.actype}}" placeholder="A/C or Comp. Type" name="actype" required>
+                <hr>
+                <input type="text" class="form-control" value="{{task.maintenanceref}}" placeholder="Maintenance record ref." name="maintenanceref" required>
+                <hr>
+                <div class="form-group">
+                    <select class="custom-select" name="tasktype" multiple required>
+                        <option>Choose a type of task</option>
+                        {% for t in mytypetasks %}
+                        <option value="{{t.id}}">{{t.singletask}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <hr>
+                <div class="form-group">
+                  <select class="custom-select" name="activitytype" multiple required>
+                      <option>Choose a type of activity</option>
+                      {% for a in mytypeactivities %}
+                      <option value="{{a.id}}">{{a.singleactivity}}</option>
+                      {% endfor %}
+                  </select>
+                  </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary float-right">Save</button>
+            </form>
+    </div>
+</div>
+{% endblock content %}

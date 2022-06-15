@@ -1,0 +1,152 @@
+{% extends 'maintenance/base.html' %}
+
+{% block content %}
+{% if adminSite %}
+<div class="container">
+  <form method="POST">
+  {% csrf_token %}
+  <div class="row">
+      <div class="col">
+      <label>From</label><br>
+      <input type="date" class="form-control" placeholder="From" name="from">
+      </div>
+      <div class="col">
+      <label>To</label><br>
+      <input type="date" class="form-control" placeholder="To" name="to">
+      </div>
+      <div class="col">
+      <br>
+      <button type="submit" class="btn btn-primary" ><i class="fa fa-search"></i> search</button>
+  </div>
+  </div>
+  </form>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12 col-12">
+            <div class="card">
+              <div class="card-header">
+                <h4 class="card-title"> Tasks</h4>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table">
+                    <thead class=" text-primary">
+                    <th>Action</th>
+                      <th>
+                        Date
+                      </th>
+                      <th>
+                        Location
+                      </th>
+                      <th>
+                        Type
+                      </th>
+                      <th>
+                        Reg
+                      </th>
+                      <th>Type of maintenance</th>
+                      <th>Privilege used</th>
+                      <th>Task Type</th>
+                      <th>Type of activity</th>
+                      <th>ATA</th>
+                      <th>Operation performed</th>
+                      <th>Time Duration</th>
+                      <th>Maintenance Record ref.</th>
+                      <th>Technical Recorder</th>
+                      <th>Remarks</th>
+                    </thead>
+                    <tbody>
+                    {% for t in tasks %}
+                      <tr>
+                        <td>
+                        <!-- Button trigger modal -->
+                        <a href="{% url 'edit_task' t.id %}" class="btn btn-primary">
+                        <i class="fa fa-pencil text-success"></i> edit
+                        </a>
+                        </td>
+                        <td>
+                          {{t.date|date:'d/m/Y'}}
+                        </td>
+                        <td>
+                          {{t.location}}
+                        </td>
+                        <td>
+                          {{t.actype}}
+                        </td>
+                        <td>
+                          {{t.acregistration}}
+                        </td>
+                        <td>
+                            {{t.typemaintenance}}
+                        </td>
+                        <td>
+                            {{t.privilege}}
+                        </td>
+                        <td>
+                            {% for tp in t.tasktype.all %}{{tp}}<br/>{% endfor %}
+                        </td>
+                        <td>
+                            {% for ta in t.activitytype.all %}{{ta}}<br/>{% endfor %}
+                        </td>
+                        <td>
+                            {{t.ata}}
+                        </td>
+                        <td>
+                            {{t.operation}}
+                        </td>
+                        <td>
+                            {{t.time}}
+                        </td>
+                        <td>
+                            {{t.maintenanceref}}
+                        </td>
+                        <td>
+                            {{t.technicalrecorder.first_name}} {{t.technicalrecorder.last_name}}
+                        </td>
+                        <td>
+                            {{t.remark}}
+                        </td>
+                      </tr>
+                      {% empty %}
+                        <div class="container my-auto">
+                            <div class="card">
+                                <div class="card-body">
+                                <h3 class="text-success" style="justify-content:center;display: flex; align-items: center;"> No Task after this search <q>{{ request.GET.q }}</q></h3>
+                                </div>
+                            </div>
+                        </div>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+    </div>
+</div>
+<nav aria-label="Page navigation example mt-2">
+    <ul class="pagination justify-content-center">
+    {% if tasks.has_previous %}
+    <li class="page-item"><a class="page-link" href="?page={{ tasks.previous_page_number }}">&laquo;</a></li>
+    {% endif %}
+    {% for t in page_range %}
+    {% if tasks.number == t  %}
+    <li class="page-item active"><a class="page-link" href="?page={{t}}">{{t}}</a></li>
+    {% else %}
+    <li class="page-item"><a class="page-link" href="?page={{t}}">{{t}}</a></li>
+    {% endif %}
+     {% endfor %}
+    {% if tasks.has_next %}
+    <li class="page-item"><a class="page-link" href="?page={{ tasks.next_page_number }}">&raquo;</a></li>
+    {% endif %}
+    </ul>
+</nav>
+{% else %}
+<div class="container">
+<div class="row">
+    <h4 class="text-warning text-center">Accès réservé aux admins(quality manager)</h4>
+</div>
+</div>
+{% endif %}
+{% endblock content %}

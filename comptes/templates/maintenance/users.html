@@ -1,0 +1,233 @@
+{% extends 'maintenance/base.html' %}
+
+{% block content %}
+{% if messages %}
+<div class="container mt-2">
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+</div>
+{% endif %}
+{% if adminSite %}
+<div class="container mb-2">
+    <div class="row justify-content-center">
+        <button type="button" class="btn btn-blue" data-toggle="modal" data-target="#exampleModal">
+        <i class="fa fa-plus"></i> Add User
+        </button>
+    </div>
+</div>
+<div class="container">
+<div class="row">
+          <div class="col-md-12">
+            <div class="card">
+              <div class="card-header">
+                <h4 class="card-title"> All Users</h4>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table">
+                    <thead class=" text-primary">
+                      <th>
+                        Option
+                      </th>
+                      <th>
+                        N°
+                      </th>
+                      <th>
+                        First Name
+                      </th>
+                      <th>
+                        Last Name
+                      </th>
+                      <th>
+                      Username
+                      </th>
+                      <th>
+                        Email
+                      </th>
+                      <th>
+                        Licence Number
+                      </th>
+                      <th>
+                        Profile
+                      </th>
+                      <th>Action</th>
+                    </thead>
+                    <tbody>
+                    {% for p in profils %}
+                      <tr>
+                        <td>
+                          <a href="{% url 'single_user' p.id %}" class="text-center btn btn-primary">Open</a>
+                        </td>
+                        <td>
+                          {{ forloop.counter }}
+                        </td>
+                        <td>
+                          {{ p.user.first_name}}
+                        </td>
+                        <td>
+                          {{ p.user.last_name}}
+                        </td>
+                        <td>
+                          {{ p.user.username }}
+                        </td>
+                        <td>
+                          {{ p.user.email }}
+                        </td>
+                        <td>
+                          {{ p.licensenumber }}
+                        </td>
+                        <td class="text-right">
+                          {{ p.profile }}
+                        </td>
+                        <td>
+                        <!-- Button trigger modal -->
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmdelete{{p.id}}">
+                        <i class="fa fa-trash text-danger"></i>
+                        </button>
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#resetpassword{{p.id}}">
+                        <i class="fa fa-user text-danger"></i>
+                        </button>
+                        <!-- Modal -->
+                        <div class="modal fade" id="confirmdelete{{p.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Confirmation</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <h6>Confirm deletion of {{p.user.first_name}} {{p.user.last_name}} account</h6>
+                                <a href="{% url 'delete_user' p.id %}" class="float-right btn btn-danger">Delete User</a>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+                        <!-- Modal -->
+                        <div class="modal fade" id="resetpassword{{p.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Reset Password</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <h6 class="py-4">Do you want to reset the password of {{p.user.first_name}} {{p.user.last_name}}</h6>
+                                <a href="{% url 'reset-password' p.user.id %}" class="float-right btn btn-danger">Reset Password</a>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+                        </td>
+                      </tr>
+                      {% empty %}
+                        <div class="container my-auto">
+                            <div class="card">
+                                <div class="card-body">
+                                <h3 class="text-success" style="justify-content:center;display: flex; align-items: center;"> No User after this search <q>{{ request.GET.q }}</q></h3>
+                                </div>
+                            </div>
+                        </div>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+</div>
+<nav aria-label="Page navigation example mt-2">
+    <ul class="pagination justify-content-center">
+    {% if profils.has_previous %}
+    <li class="page-item"><a class="page-link" href="?page={{ profils.previous_page_number }}">&laquo;</a></li>
+    {% endif %}
+    {% for p in page_range %}
+    {% if profils.number == p  %}
+    <li class="page-item active"><a class="page-link" href="?page={{p}}">{{p}}</a></li>
+    {% else %}
+    <li class="page-item"><a class="page-link" href="?page={{p}}">{{p}}</a></li>
+    {% endif %}
+     {% endfor %}
+    {% if profils.has_next %}
+    <li class="page-item"><a class="page-link" href="?page={{ profils.next_page_number }}">&raquo;</a></li>
+    {% endif %}
+    </ul>
+  </nav>
+</div>
+<!-- My modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add User</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" action="{% url 'users' %}">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col">
+            <input type="text" class="form-control" placeholder="First name" name="firstname">
+            <hr>
+            <input type="text" class="form-control" placeholder="Username" name="username" required>
+            <hr>
+            <input type="password" class="form-control" placeholder="Initial Password" name="password" required>
+            <hr>
+            <input type="text" class="form-control" placeholder="License Number" name="licensenumber" required>
+            <hr>
+            </div>
+            <div class="col">
+            <input type="text" class="form-control" placeholder="Last name" name="lastname">
+            <hr>
+            <input type="email" class="form-control" placeholder="Email" name="email" required>
+            <hr>
+            <input type="password" class="form-control" placeholder="Confirm Password" name="cpassword" required>
+            <hr>
+            <div class="form-group">
+                <select class="custom-select" name="profile" required>
+                    <option>Choose a profile</option>
+                    <option value="lm engineer">LM Engineer</option>
+                    <option value="quality manager">Quality Manager</option>
+                    <option value="assistant engineer">Assistant Engineer</option>
+                </select>
+            </div>
+            <hr>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary float-right">Save</button>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <span class="text-warning">NB: Remind your users to change thier initail passwords</span>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- end Modal-->
+{% else %}
+<div class="container">
+    <div class="row">
+        <h5 class="text-warning text-center">Reserved access (quality manager)</h5>
+    </div>
+</div>
+{% endif %}
+{% endblock content %}

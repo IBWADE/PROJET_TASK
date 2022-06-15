@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Maintenance experience logbook</title>
+<style>
+    @page {
+        size: a4 landscape;
+        @frame header_frame {           /* Static Frame */
+            -pdf-frame-content: header_content;
+            left: 60pt; width: 700pt; top: 20pt; height: 70pt;
+        }
+        @frame content_frame {          /* Content Frame */
+            left: 60pt; width: 700pt; top: 90pt; height: 420pt;
+            -pdf-keep-with-next: true;
+        }
+        @frame footer_frame {           /* Another static Frame */
+            -pdf-frame-content: footer_content;
+            left: 60pt; width: 700pt; top: 510pt; height: 30pt;
+
+        }
+
+        
+    }
+    
+    th,td {
+      text-align: center;
+      padding: 4px;
+    }
+    ul {
+      list-style-type: none;
+      text-align: center;
+    }
+    li {
+      display: inline;
+      padding:10px;
+      color: red;
+      margin: 10pt;
+    }
+    img {
+      zoom: 100%;
+  
+    }
+
+</style>
+</head>
+
+<body>
+    <!-- Content for Static Frame 'header_frame' -->
+    <div id="header_content">
+      <h2 style="color:aqua;text-align: center;">MAINTENANCE EXPERIENCE LOGBOOK</h2>
+      <p>
+        <img src="https://res.cloudinary.com/dmidsmjcb/image/upload/v1600514586/2as_efdmvn.jpg" width="50pt" height="35pt">
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <span class="nom" style="font-weight: bold;">{{user.first_name}} {{user.last_name}}</span>
+      </p>
+      <hr>
+    </div>
+
+    <!-- Content for Static Frame 'footer_frame' -->
+    <div id="footer_content">
+      <ul>
+        <li><span style="text-decoration: underline;">DATE</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</li>
+        <li><span style="text-decoration: underline;">LM VALIDATION</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</li>
+        <li><span style="text-decoration: underline;">SIGNATURE</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</li>
+      </ul>
+      <span style="text-align: end;"><pdf:pagenumber>/<pdf:pagecount></span>
+    </div>
+
+    <!-- HTML Content -->
+    
+    <table repeat="1" border="1">
+            <thead class="thead-dark">
+              <tr>
+                <th>
+                    Date
+                  </th>
+                  <th>
+                    Location
+                  </th>
+                  <th>
+                    Type
+                  </th>
+                  <th>
+                    Reg
+                  </th>
+                  <th>Type of maintenance</th>
+                  <th>Privilege used</th>
+                  <th>Task Type</th>
+                  <th>Type of activity</th>
+                  <th>ATA</th>
+                  <th>Operation performed</th>
+                  <th>Time Duration</th>
+                  <th>Maintenance Record ref.</th>
+                  <th>Remarks</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for t in Tasks %}
+                <tr>
+                  <td>
+                    {{t.date|date:'d/m/Y'}}
+                  </td>
+                  <td>
+                    {{t.location}}
+                  </td>
+                  <td>
+                    {{t.actype}}
+                  </td>
+                  <td>
+                    {{t.acregistration}}
+                  </td>
+                  <td>
+                      {{t.typemaintenance}}
+                  </td>
+                  <td>
+                      {{t.privilege}}
+                  </td>
+                  <td>
+                      {% for tp in t.tasktype.all %}{{tp}}<br/>{% endfor %}
+                  </td>
+                  <td>
+                      {% for ta in t.activitytype.all %}{{ta}}<br/>{% endfor %}
+                  </td>
+                  <td>
+                      {{t.ata}}
+                  </td>
+                  <td>
+                      {{t.operation}}
+                  </td>
+                  <td>
+                      {{t.time}}
+                  </td>
+                  <td>
+                      {{t.maintenanceref}}
+                  </td>
+                  <td>
+                      {{t.remark}}
+                  </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+    </table>
+</body>
+</html>

@@ -1,0 +1,249 @@
+{% extends 'maintenance/base.html' %}
+
+{% block content %}
+{% if messages %}
+<div class="container mt-2">
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+</div>
+{% endif %}
+<div class="container mb-2">
+    <div class="row justify-content-center">
+        <button type="button" class="btn btn-blue" data-toggle="modal" data-target="#exampleModal">
+        <i class="fa fa-calendar-o"></i> Add Task
+        </button>
+    </div>
+</div>
+<div class="container">
+  <form method="GET">
+  {% csrf_token %}
+  <div class="row justify-content-center">
+      <div class="col">
+      <label>From</label><br>
+      <input type="date" class="form-control" placeholder="From" name="from">
+      </div>
+      <div class="col">
+      <label>To</label><br>
+      <input type="date" class="form-control" placeholder="To" name="to">
+      </div>
+      <div class="col">
+      <br>
+      <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> search</button>
+  </div>
+  </div>
+  </form>
+</div>
+
+    <div class="row">
+        <div class="col-md-12 shadow py-4 mb-2">
+            <div class="card">
+              <div class="card-header">
+                <h5 class="card-title"> Tasks Added <a href="{% url 'printtasks' profil.user.id %}" target="_blank" class="btn btn-primary float-right">Print</a></h5>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table">
+                    <thead class="text-primary">
+                      <th>Option</th>
+                      <th>
+                        Date
+                      </th>
+                      <th>
+                        Location
+                      </th>
+                      <th>
+                        Type
+                      </th>
+                      <th>
+                        Reg
+                      </th>
+                      <th>Type of maintenance</th>
+                      <th>Privilege used</th>
+                      <th>Task Type</th>
+                      <th>Type of activity</th>
+                      <th>ATA</th>
+                      <th>Operation performed</th>
+                      <th>Time Duration</th>
+                      <th>Maintenance Record ref.</th>
+                      <th>Remarks</th>
+                    </thead>
+                    <tbody>
+                    {% for t in tasks %}
+                      <tr>
+                        <td>
+                        <a href="{% url 'edit_task' t.id %}" class="btn btn-primary"><i class="fa fa-pencil"></i></a> <a href="#" type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmdelete{{t.id}}"><i class="fa fa-trash"></i></a>
+                          <!-- Modal -->
+                        <div class="modal fade" id="confirmdelete{{t.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                          <div class="modal-dialog">
+                              <div class="modal-content">
+                              <div class="modal-header">
+                                  <h5 class="modal-title" id="exampleModalLabel">Confirmation</h5>
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                  </button>
+                              </div>
+                              <div class="modal-body">
+                                  <h6>Confirm deletion of the task</h6>
+                                  <a href="{% url 'delete_task' t.id %}" class="float-right btn btn-danger">Delete task</a>
+                              </div>
+                              <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                              </div>
+                              </div>
+                          </div>
+                          </div>
+                        </td>
+                        <td>
+                          {{t.date|date:'d/m/Y'}}
+                        </td>
+                        <td>
+                          {{t.location}}
+                        </td>
+                        <td>
+                          {{t.actype}}
+                        </td>
+                        <td>
+                          {{t.acregistration}}
+                        </td>
+                        <td>
+                            {{t.typemaintenance}}
+                        </td>
+                        <td>
+                            {{t.privilege}}
+                        </td>
+                        <td>
+                            {% for tp in t.tasktype.all %}{{tp}}<br/>{% endfor %}
+                        </td>
+                        <td>
+                            {% for ta in t.activitytype.all %}{{ta}}<br/>{% endfor %}
+                        </td>
+                        <td>
+                            {{t.ata}}
+                        </td>
+                        <td>
+                            {{t.operation}}
+                        </td>
+                        <td>
+                            {{t.time}}
+                        </td>
+                        <td>
+                            {{t.maintenanceref}}
+                        </td>
+                        <td>
+                            {{t.remark}}
+                        </td>
+                      </tr>
+                      {% empty %}
+                        <div class="container my-auto">
+                            <div class="card">
+                                <div class="card-body">
+                                <h3 class="text-success" style="justify-content:center;display: flex; align-items: center;"> No Task added after this search <q>{{ request.GET.q }}</q></h3>
+                                </div>
+                            </div>
+                        </div>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+    </div>
+
+<nav aria-label="Page navigation example mt-2">
+    <ul class="pagination justify-content-center">
+    {% if tasks.has_previous %}
+    <li class="page-item"><a class="page-link" href="?page={{ tasks.previous_page_number }}">&laquo;</a></li>
+    {% endif %}
+    {% for t in page_range %}
+    {% if tasks.number == t  %}
+    <li class="page-item active"><a class="page-link" href="?page={{t}}">{{t}}</a></li>
+    {% else %}
+    <li class="page-item"><a class="page-link" href="?page={{t}}">{{t}}</a></li>
+    {% endif %}
+     {% endfor %}
+    {% if tasks.has_next %}
+    <li class="page-item"><a class="page-link" href="?page={{ tasks.next_page_number }}">&raquo;</a></li>
+    {% endif %}
+    </ul>
+  </nav>
+<!-- My modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Add Task</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form method="POST" action="{% url 'tasks' %}">
+          {% csrf_token %}
+          <div class="row">
+              <div class="col">
+              <input type="date" class="form-control" placeholder="Date" name="date">
+              <hr>
+              <input type="text" class="form-control" placeholder="Location" name="location" required>
+              <hr>
+              <input type="text" class="form-control" placeholder="ATA" name="ata" required>
+              <hr>
+              <input type="text" class="form-control" placeholder="A/C Reg or .Comp S/n" name="acregistration" required>
+              <hr>
+              <input type="text" class="form-control" placeholder="Operation performed" name="operation" required>
+              <hr>
+              <input type="number" class="form-control" placeholder="Time Duration" name="time"required>
+              <hr>
+              <textarea class="form-control" name="remark" placeholder="remark"></textarea>
+              </div>
+              <div class="col">
+              <input type="text" class="form-control" placeholder="Type of maintenance" name="typemaintenance">
+              <hr>
+              <select class="form-control" id="exampleFormControlSelect1" name="privilege">
+                <option>privilege used</option>
+                <option value="B1">B1</option>
+                <option value="B2">B2</option>
+              </select>
+              <hr>
+              <input type="text" class="form-control" placeholder="A/C or Comp. Type" name="actype" required>
+              <hr>
+              <input type="text" class="form-control" placeholder="Maintenance record ref." name="maintenanceref" required>
+              <hr>
+              <div class="form-group">
+                  <select class="custom-select" name="tasktype" multiple required>
+                      <option>Choose a type of task </option>
+                      {% for t in mytypetasks %}
+                      <option value="{{t.id}}">{{t.singletask}}</option>
+                      {% endfor %}
+                  </select>
+              </div>
+              <hr>
+              <div class="form-group">
+                <select class="custom-select" name="activitytype" multiple required>
+                    <option>Choose a type of activity</option>
+                    {% for a in mytypeactivities %}
+                    <option value="{{a.id}}">{{a.singleactivity}}</option>
+                    {% endfor %}
+                </select>
+                </div>
+              </div>
+          </div>
+          <button type="submit" class="btn btn-primary float-right">Save</button>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <span class="text-warning">NB: Only admins can edit saved tasks</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- end Modal-->
+{% endblock content %}
