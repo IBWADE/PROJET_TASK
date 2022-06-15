@@ -10,3 +10,4 @@ touch==2020.12.3
 tzdata==2022.1
 values==2020.12.3
 whitenoise==6.2.0
+django-filter==21.1
