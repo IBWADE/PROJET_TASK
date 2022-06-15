@@ -11,3 +11,4 @@ tzdata==2022.1
 values==2020.12.3
 whitenoise==6.2.0
 django-filter==21.1
+xhtml2pdf==0.2.7
