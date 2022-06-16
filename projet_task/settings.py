@@ -26,7 +26,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-_ttxtz2-!3rl!&83-%g41_q%tnc=g!tuue(v#@ew(tl-p0c1-o'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+if os.environ.get('ON_HEROKU', '0') == '0':
+    DEBUG = True
+else:
+    DEBUG = False
+
 
 ALLOWED_HOSTS = ['https://taskmaintenance.herokuapp.com/','127.0.0.1']
 
@@ -88,9 +92,21 @@ WSGI_APPLICATION = 'projet_task.wsgi.application'
    #     'NAME': BASE_DIR / 'db.sqlite3',
     #}
 #}
-DATABASES = {
-    'default': dj_database_url.config()
-}
+#DATABASES = {
+ #   'default': dj_database_url.config()
+#}
+if os.environ.get('ON_HEROKU', '0') == '0':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+else:
+    DATABASES = {
+        # TODO: what does this max_age setting do?
+        'default' : dj_database_url.config(conn_max_age=600)
+    }
 
 
 # Password validation
