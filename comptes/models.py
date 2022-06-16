@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 
 class Profil(models.Model):
     typecompte = (
+        ('LM Manager','lm manager'),
         ('LM Engineer','lm engineer'),
         ('Quality Manager','quality manager'),
         ('Assistant Engineer','assistant engineer'),
